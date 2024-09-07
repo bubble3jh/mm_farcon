@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from torch.optim.lr_scheduler import OneCycleLR, LinearLR
 from model.base import BestClf
-from model.farcon import FarconVAE
+from model.farcon import FarconVAE, FarconVAEnoY
 import torch.nn.functional as F
 
 import os
@@ -17,7 +17,8 @@ def train_farconvae(args, model, train_loader, test_loader, device, model_file_n
     ep_per_iter = len(train_loader)
     tot_train_iters = ep_per_iter * args.epochs
     print("==============================================")
-    print(f"1stage training start.\n dataset size: {train_loader.dataset.X.shape}")
+    # print(f"1stage training start.\n dataset size: {train_loader.dataset.X.shape}")
+    print(f"1stage training start.\n dataset size: {len(train_loader.dataset)}")
     print("==============================================")
     print(f'len train loader :{ep_per_iter}')
     print(f'train tot iters :{tot_train_iters}')
@@ -29,25 +30,29 @@ def train_farconvae(args, model, train_loader, test_loader, device, model_file_n
         clf_xy.load_state_dict(torch.load(args.clf_path, map_location=device))
     clf_xy = clf_xy.to(device)
     opt_clf = torch.optim.Adam(clf_xy.parameters(), lr=args.lr, weight_decay=args.wd, amsgrad=True)
-    opt_vae, opt_pred = model.get_optimizer()
-    
+    if args.data_name != "clipmm":    opt_vae, opt_pred = model.get_optimizer()
+    else:                             opt_vae = model.get_optimizer()
     lrs = []
     if args.scheduler == 'lr':
         scheduler_c = LinearLR(opt_clf, total_iters=args.epochs, last_epoch=-1, start_factor=1.0, end_factor=args.end_fac)
         scheduler_v = LinearLR(opt_vae, total_iters=args.epochs, last_epoch=-1, start_factor=1.0, end_factor=args.end_fac)
-        scheduler_d = LinearLR(opt_pred, total_iters=args.epochs, last_epoch=-1, start_factor=1.0, end_factor=args.end_fac)
-        schedulers = [scheduler_c, scheduler_v, scheduler_d]
+        if args.data_name != "clipmm": 
+            scheduler_d = LinearLR(opt_pred, total_iters=args.epochs, last_epoch=-1, start_factor=1.0, end_factor=args.end_fac)
+            schedulers = [scheduler_c, scheduler_v, scheduler_d]
+        schedulers = [scheduler_c, scheduler_v]
     elif args.scheduler == 'one':
         scheduler_c = OneCycleLR(opt_clf, max_lr=args.max_lr, steps_per_epoch=ep_per_iter, epochs=args.epochs, anneal_strategy='linear')
         scheduler_v = OneCycleLR(opt_vae, max_lr=args.max_lr, steps_per_epoch=ep_per_iter, epochs=args.epochs, anneal_strategy='linear')
-        scheduler_d = OneCycleLR(opt_pred, max_lr=args.max_lr, steps_per_epoch=ep_per_iter, epochs=args.epochs, anneal_strategy='linear')
-        schedulers = [scheduler_c, scheduler_v, scheduler_d]
+        if args.data_name != "clipmm": 
+            scheduler_d = OneCycleLR(opt_pred, max_lr=args.max_lr, steps_per_epoch=ep_per_iter, epochs=args.epochs, anneal_strategy='linear')
+            schedulers = [scheduler_c, scheduler_v, scheduler_d]
+        schedulers = [scheduler_c, scheduler_v]
     else:
         schedulers = []
 
     clf_lossf = nn.BCEWithLogitsLoss()
-    farcon_lossf = FarconVAELoss(args, device, tot_train_iters)
-
+    if args.data_name != "clipmm": farcon_lossf = FarconVAELoss(args, device, tot_train_iters)
+    else :                         farcon_lossf = FarconVAELossnoY(args, device, tot_train_iters)
     best_clf_acc, best_pred_acc, best_to, patience = -1e7, -1e7, -1e7, 0
     for epoch in range(1, args.epochs + 1):
         # ------------------------------------
@@ -59,62 +64,103 @@ def train_farconvae(args, model, train_loader, test_loader, device, model_file_n
         # tracking quantities (loss, variance, divergence, performance, ...)
         ep_tot_loss, ep_recon_loss, ep_kl_loss, ep_c_loss, ep_sr, \
         ep_pred_loss, ep_clf_loss, ep_pred_cor, ep_clf_cor, ep_tot_num = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0
+        if args.data_name != 'clipmm':
+            for x, s, y in train_loader:
+                x, s, y = x.to(device), s.to(device), y.to(device)
 
-        for x, s, y in train_loader:
-            x, s, y = x.to(device), s.to(device), y.to(device)
+                current_iter += 1
+                n = x.shape[0]
+                ori_x, ori_s, ori_y = x, s, y
+                cont_x, cont_s, cont_y = x, 1-s, y
+                
+                # BestClf loss
+                y_hat = clf_xy(ori_x)
+                clf_loss = clf_lossf(y_hat, ori_y)
+                y_hat_bin = torch.ones_like(y_hat, device=device)
+                y_hat_bin[y_hat < 0] = 0.0
 
-            current_iter += 1
-            n = x.shape[0]
-            ori_x, ori_s, ori_y = x, s, y
-            cont_x, cont_s, cont_y = x, 1-s, y
-            
-            # BestClf loss
-            y_hat = clf_xy(ori_x)
-            clf_loss = clf_lossf(y_hat, ori_y)
-            y_hat_bin = torch.ones_like(y_hat, device=device)
-            y_hat_bin[y_hat < 0] = 0.0
+                # out : (zx, zs), (x_recon, s_recon), (mu_x, logvar_x, mu_s, logvar_s), y_pred
+                out1 = model(ori_x, ori_s, ori_y)
+                out2 = model(cont_x, cont_s, cont_y)
 
-            # out : (zx, zs), (x_recon, s_recon), (mu_x, logvar_x, mu_s, logvar_s), y_pred
-            out1 = model(ori_x, ori_s, ori_y)
-            out2 = model(cont_x, cont_s, cont_y)
+                recon_loss, kl_loss, pred_loss, cont_loss, sr_loss, y_pred = farcon_lossf(out1, out2, ori_x, cont_x, ori_s, cont_s, y, model, current_iter)
 
-            recon_loss, kl_loss, pred_loss, cont_loss, sr_loss, y_pred = farcon_lossf(out1, out2, ori_x, cont_x, ori_s, cont_s, y, model, current_iter)
+                opt_vae.zero_grad(set_to_none=True)
+                opt_pred.zero_grad(set_to_none=True)
+                if args.clf_path == 'no':
+                    opt_clf.zero_grad(set_to_none=True)
 
-            opt_vae.zero_grad(set_to_none=True)
-            opt_pred.zero_grad(set_to_none=True)
-            if args.clf_path == 'no':
-                opt_clf.zero_grad(set_to_none=True)
+                loss = recon_loss + pred_loss + kl_loss + cont_loss + sr_loss
+                loss.backward()
+                if args.clf_path == 'no':
+                    clf_loss.backward()
 
-            loss = recon_loss + pred_loss + kl_loss + cont_loss + sr_loss
-            loss.backward()
-            if args.clf_path == 'no':
-                clf_loss.backward()
+                if args.clip_val != 0:
+                    torch.nn.utils.clip_grad_norm_(model.vae_params(), max_norm=args.clip_val)
+                opt_vae.step()
+                opt_pred.step()
+                if args.clf_path == 'no':
+                    opt_clf.step()
 
-            if args.clip_val != 0:
-                torch.nn.utils.clip_grad_norm_(model.vae_params(), max_norm=args.clip_val)
-            opt_vae.step()
-            opt_pred.step()
-            if args.clf_path == 'no':
-                opt_clf.step()
+                if (args.scheduler == 'one'):
+                    for sche in schedulers:
+                        sche.step()
 
-            if (args.scheduler == 'one'):
-                for sche in schedulers:
-                    sche.step()
+                # monitoring
+                ep_tot_num += n
+                ep_tot_loss += loss.item() * n
+                ep_recon_loss += recon_loss.item() * n
+                ep_kl_loss += kl_loss.item() * n
+                ep_pred_loss += pred_loss.item() * n
+                ep_pred_cor += (y_pred == ori_y).sum().item()
+                ep_clf_loss += clf_loss.item() * n
+                ep_clf_cor += (y_hat_bin == ori_y).sum().item()
+                if args.alpha != 0:
+                    ep_c_loss += cont_loss.item() * n
+                if args.gamma != 0:
+                    ep_sr += sr_loss.item() * n
+        else: #clip mm
+            for x, cont_x, c, cont_c in train_loader:
+                x, c, cont_c = x.to(device), c.to(device), cont_c.to(device)
 
-            # monitoring
-            ep_tot_num += n
-            ep_tot_loss += loss.item() * n
-            ep_recon_loss += recon_loss.item() * n
-            ep_kl_loss += kl_loss.item() * n
-            ep_pred_loss += pred_loss.item() * n
-            ep_pred_cor += (y_pred == ori_y).sum().item()
-            ep_clf_loss += clf_loss.item() * n
-            ep_clf_cor += (y_hat_bin == ori_y).sum().item()
-            if args.alpha != 0:
-                ep_c_loss += cont_loss.item() * n
-            if args.gamma != 0:
-                ep_sr += sr_loss.item() * n
+                current_iter += 1
+                n = x.shape[0]
+                ori_x, ori_s= x, c
+                cont_x, cont_s = x, cont_c
 
+                # out : (zx, zs), (x_recon, s_recon), (mu_x, logvar_x, mu_s, logvar_s), y_pred
+                out1 = model(ori_x, ori_s)
+                out2 = model(cont_x, cont_s)
+
+                if args.data_name == "clipmm":
+                    recon_loss, kl_loss, cont_loss, sr_loss = farcon_lossf(out1, out2, ori_x, cont_x, ori_s, cont_s, model, current_iter)
+                    loss = recon_loss + kl_loss + cont_loss + sr_loss
+                else:
+                    recon_loss, kl_loss, pred_loss, cont_loss, sr_loss, y_pred = farcon_lossf(out1, out2, ori_x, cont_x, ori_s, cont_s, model, current_iter)
+                    loss = recon_loss + pred_loss + kl_loss + cont_loss + sr_loss
+
+                opt_vae.zero_grad(set_to_none=True)
+                if args.clf_path == 'no':
+                    opt_clf.zero_grad(set_to_none=True)
+
+                loss.backward()
+                if args.clip_val != 0:
+                    torch.nn.utils.clip_grad_norm_(model.vae_params(), max_norm=args.clip_val)
+                opt_vae.step()
+
+                if (args.scheduler == 'one'):
+                    for sche in schedulers:
+                        sche.step()
+
+                # monitoring
+                ep_tot_num += n
+                ep_tot_loss += loss.item() * n
+                ep_recon_loss += recon_loss.item() * n
+                ep_kl_loss += kl_loss.item() * n
+                if args.alpha != 0:
+                    ep_c_loss += cont_loss.item() * n
+                if args.gamma != 0:
+                    ep_sr += sr_loss.item() * n
         if args.scheduler == 'lr':
             for sche in schedulers:
                 sche.step()
@@ -128,29 +174,51 @@ def train_farconvae(args, model, train_loader, test_loader, device, model_file_n
         ep_tot_test_num, ep_pred_cor_test, ep_clf_cor_test, ep_c_loss_test, current_to = 0, 0, 0, 0.0, 0.0
         y_pred_raw = torch.tensor([], device=device)
         with torch.no_grad():
-            for x, s, y in test_loader:
-                x, s, y = x.to(device), s.to(device), y.to(device)
-                n = x.shape[0]
-                clf_loss_test = clf_lossf(clf_xy(x), y)
-                # use binary for pseudo label in test time encoder input y
-                y_hat = clf_xy(x)
-                y_hat_bin = torch.ones_like(y_hat, device=device)
-                y_hat_bin[y_hat < 0] = 0.0
+            if args.data_name != "clipmm":
+                for x, s, y in test_loader:
+                    x, s, y = x.to(device), s.to(device), y.to(device)
+                    n = x.shape[0]
+                    clf_loss_test = clf_lossf(clf_xy(x), y)
+                    # use binary for pseudo label in test time encoder input y
+                    y_hat = clf_xy(x)
+                    y_hat_bin = torch.ones_like(y_hat, device=device)
+                    y_hat_bin[y_hat < 0] = 0.0
 
-                out1 = model(x, s, y_hat_bin)
-                out2 = model(x, 1-s, y_hat_bin)
+                    out1 = model(x, s, y_hat_bin)
+                    out2 = model(x, 1-s, y_hat_bin)
 
-                recon_x_loss_te, recon_s_loss_te, pred_loss_te, cont_loss_te, y_pred_te = farcon_lossf(out1, out2, x, x, s, 1-s, y, model, current_iter, is_train=False)
-                
-                ep_tot_test_num += n
-                y_pred_raw = torch.cat((y_pred_raw, y_pred_te))
-                ep_recon_x_loss_test += recon_x_loss_te.item() * n
-                ep_recon_s_loss_test += recon_s_loss_te.item() * n
-                ep_c_loss_test += args.alpha * cont_loss_te.item() * n
-                ep_pred_loss_test += pred_loss_te.item() * n
-                ep_pred_cor_test += (y_pred_te == y).sum().item()
-                ep_clf_cor_test += (y_hat_bin == y).sum().item()
-                ep_clf_loss_test += clf_loss_test.item() * n
+                    recon_x_loss_te, recon_s_loss_te, pred_loss_te, cont_loss_te, y_pred_te = farcon_lossf(out1, out2, x, x, s, 1-s, y, model, current_iter, is_train=False)
+                    
+                    ep_tot_test_num += n
+                    y_pred_raw = torch.cat((y_pred_raw, y_pred_te))
+                    ep_recon_x_loss_test += recon_x_loss_te.item() * n
+                    ep_recon_s_loss_test += recon_s_loss_te.item() * n
+                    ep_c_loss_test += args.alpha * cont_loss_te.item() * n
+                    ep_pred_loss_test += pred_loss_te.item() * n
+                    ep_pred_cor_test += (y_pred_te == y).sum().item()
+                    ep_clf_cor_test += (y_hat_bin == y).sum().item()
+                    ep_clf_loss_test += clf_loss_test.item() * n
+            else:
+                for x, cont_x, c, cont_c in test_loader:
+                    x, c, cont_c = x.to(device), c.to(device), cont_c.to(device)
+
+                    n = x.shape[0]
+                    
+                    ori_x, ori_s= x, c
+                    cont_x, cont_s = x, cont_c
+
+                    out1 = model(ori_x, ori_s)
+                    out2 = model(cont_x, cont_s)
+
+                    if args.data_name == "clipmm":
+                        recon_x_loss_te, recon_s_loss_te, cont_loss_te = farcon_lossf(out1, out2, ori_x, cont_x, ori_s, cont_s, model, current_iter, is_train=False)
+                    else:
+                        recon_x_loss_te, recon_s_loss_te, pred_loss_te, cont_loss_te, y_pred_te = farcon_lossf(out1, out2, x, x, s, 1-s, y, model, current_iter, is_train=False)
+                    
+                    ep_tot_test_num += n
+                    ep_recon_x_loss_test += recon_x_loss_te.item() * n
+                    ep_recon_s_loss_test += recon_s_loss_te.item() * n
+                    ep_c_loss_test += args.alpha * cont_loss_te.item() * n
 
         # save best CLF w.r.t epoch best accuracy
         if args.clf_path == 'no':
@@ -220,7 +288,7 @@ def train_farconvae(args, model, train_loader, test_loader, device, model_file_n
     if args.last_epmod :
         return model, clf_xy
     else:
-        model = FarconVAE(args, device)
+        model = FarconVAEnoY(args, device)
         model.load_state_dict(torch.load(os.path.join(args.model_path, 'farcon_' + model_file_name), map_location=device))
         model.to(device)
         return model, clf_xy

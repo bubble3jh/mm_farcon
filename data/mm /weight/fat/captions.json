@@ -1,0 +1,42 @@
+[
+    {
+        "image_path": "./weight/fat/fatwoman6.jpg",
+        "caption": "A black and white photo of a person standing on a sidewalk."
+    },
+    {
+        "image_path": "./weight/fat/fatwoman4.jpg",
+        "caption": "A black and white photo of a person standing on a sidewalk."
+    },
+    {
+        "image_path": "./weight/fat/fatman3.jpg",
+        "caption": "A black and white photo of a man standing in the middle of a field."
+    },
+    {
+        "image_path": "./weight/fat/fatman4.jpg",
+        "caption": "A black and white photo of a man standing in the middle of a field."
+    },
+    {
+        "image_path": "./weight/fat/fatwoman1.jpg",
+        "caption": "A black and white photo of a person standing on a sidewalk."
+    },
+    {
+        "image_path": "./weight/fat/fatman1.jpg",
+        "caption": "A black and white photo of a man walking on a sidewalk."
+    },
+    {
+        "image_path": "./weight/fat/fatwoman2.jpg",
+        "caption": "A black and white photo of a woman standing on a sidewalk."
+    },
+    {
+        "image_path": "./weight/fat/fatwoman3.jpg",
+        "caption": "A black and white photo of a person standing on a sidewalk."
+    },
+    {
+        "image_path": "./weight/fat/fatman5.jpg",
+        "caption": "A black and white photo of a man walking on a sidewalk."
+    },
+    {
+        "image_path": "./weight/fat/fatman6.jpg",
+        "caption": "A black and white photo of a man standing in the middle of a field."
+    }
+]

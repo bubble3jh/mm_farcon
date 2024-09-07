@@ -1,0 +1,42 @@
+[
+    {
+        "image_path": "./weight/thin/thinman5.jpg",
+        "caption": "A man standing in the middle of a field."
+    },
+    {
+        "image_path": "./weight/thin/thinwoman2.jpg",
+        "caption": "A black and white photo of a woman standing on a sidewalk."
+    },
+    {
+        "image_path": "./weight/thin/thinwoman1.jpg",
+        "caption": "A black and white photo of a woman standing in front of a wall."
+    },
+    {
+        "image_path": "./weight/thin/thinman6.jpg",
+        "caption": "A man standing in the middle of a dark field."
+    },
+    {
+        "image_path": "./weight/thin/thinwoman6.jpg",
+        "caption": "A black and white photo of a woman standing in the middle of a field."
+    },
+    {
+        "image_path": "./weight/thin/thinman1.jpg",
+        "caption": "A man standing in the middle of a dark night."
+    },
+    {
+        "image_path": "./weight/thin/thinman2.jpg",
+        "caption": "A black and white photo of a man standing in the middle of a field."
+    },
+    {
+        "image_path": "./weight/thin/thinman3.jpg",
+        "caption": "A man standing in the middle of a field."
+    },
+    {
+        "image_path": "./weight/thin/thinwoman3.jpg",
+        "caption": "A black and white photo of a woman standing in front of a wall."
+    },
+    {
+        "image_path": "./weight/thin/thinwoman5.jpg",
+        "caption": "A black and white photo of a woman standing in the middle of a field."
+    }
+]

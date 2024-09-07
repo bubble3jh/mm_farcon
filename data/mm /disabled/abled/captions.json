@@ -1,0 +1,18 @@
+[
+    {
+        "image_path": "./disabled/abled/abled3.jpg",
+        "caption": "A man walking down a street with a sign."
+    },
+    {
+        "image_path": "./disabled/abled/abled4.jpg",
+        "caption": "A man riding a skateboard down a ramp."
+    },
+    {
+        "image_path": "./disabled/abled/abled2.jpg",
+        "caption": "A black and white photo of a street sign."
+    },
+    {
+        "image_path": "./disabled/abled/abled1.jpg",
+        "caption": "Two children walking on a sidewalk under a traffic sign."
+    }
+]

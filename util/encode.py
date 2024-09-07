@@ -26,6 +26,20 @@ def encode_all(args, dataset, model, xy_clf, device, is_train=True):
     # array array series df
     return np.array(zx.cpu()), np.array(zs.cpu()), s, y
 
+def encode_all_clipmm(args, dataset, model, device, is_train=True):
+    df = pd.DataFrame(dataset.dataset.data)
+    x = df['image1'].tolist()
+    s = df['caption1'].tolist()
+    cont_s = df['caption2'].tolist()
+    X_tensor, s_tensor, cont_s_tensor = torch.stack(x), torch.stack(s), torch.stack(cont_s)
+    X_tensor, s_tensor, cont_s_tensor  = X_tensor.to(device), s_tensor.to(device), cont_s_tensor.to(device)
+    model.eval()
+    with torch.no_grad():
+        (zx, zs), _ = model.encode(X_tensor, s_tensor)
+        (c_zx, cont_zs), _ = model.encode(X_tensor, cont_s_tensor) # TODO: is zx == c_zx?
+    # array array series df
+    return zx, zs, cont_zs
+
 
 def encode_all_yaleb(args, model, xy_clf, device, is_train=True, data=0):
     if data == 0:

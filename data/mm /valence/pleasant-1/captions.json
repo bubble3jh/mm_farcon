@@ -1,0 +1,46 @@
+[
+    {
+        "image_path": "./valence/pleasant-1/sunrise1_google.jpeg",
+        "caption": "A view of a sunset with clouds in the background."
+    },
+    {
+        "image_path": "./valence/pleasant-1/gold1_google.jpeg",
+        "caption": "A large gold gold gold ring sitting on top of a metal bench."
+    },
+    {
+        "image_path": "./valence/pleasant-1/money1_google.jpg",
+        "caption": "A pile of money sitting on top of a pile of flags."
+    },
+    {
+        "image_path": "./valence/pleasant-1/rainbow1_google.jpg",
+        "caption": "A rainbow is flying through a cloudy sky."
+    },
+    {
+        "image_path": "./valence/pleasant-1/baby1_cifar.png",
+        "caption": "A baby is standing on top of a bathtub."
+    },
+    {
+        "image_path": "./valence/pleasant-1/diamond1_google.png",
+        "caption": "A close up view of a person sitting on a beach."
+    },
+    {
+        "image_path": "./valence/pleasant-1/flower1_google.jpeg",
+        "caption": "A red rose sitting on top of a glass vase."
+    },
+    {
+        "image_path": "./valence/pleasant-1/butterfly1_google.jpg",
+        "caption": "A close-up photo of a single orange bird."
+    },
+    {
+        "image_path": "./valence/pleasant-1/beach1_cifar.png",
+        "caption": "A picture of a beach with a surfboard on it."
+    },
+    {
+        "image_path": "./valence/pleasant-1/ocean1_cifar.png",
+        "caption": "A couple of surfers standing on top of a beach."
+    },
+    {
+        "image_path": "./valence/pleasant-1/sunset1_google.jpeg",
+        "caption": "A view of a beach on a sunny day."
+    }
+]

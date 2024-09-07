@@ -1,0 +1,86 @@
+[
+    {
+        "image_path": "./gender/family/parents1_google.jpg",
+        "caption": "A woman holding a baby in her lap with a smile on her face."
+    },
+    {
+        "image_path": "./gender/family/marriage2_google.jpg",
+        "caption": "A woman holding a bouquet of flowers while holding a bouquet of flowers."
+    },
+    {
+        "image_path": "./gender/family/relatives1_google.jpeg",
+        "caption": "A group of people sitting at a table with a plate of food."
+    },
+    {
+        "image_path": "./gender/family/relatives3_google.jpg",
+        "caption": "A group of people sitting at a table with a turkey."
+    },
+    {
+        "image_path": "./gender/family/home1_google.jpg",
+        "caption": "A white and red house with a flag on it."
+    },
+    {
+        "image_path": "./gender/family/home2_google.jpeg",
+        "caption": "A white and black couch sitting in front of a house."
+    },
+    {
+        "image_path": "./gender/family/home3_google.jpeg",
+        "caption": "A person sitting in front of a house with a fire hydrant."
+    },
+    {
+        "image_path": "./gender/family/wedding1_google.jpeg",
+        "caption": "A bride and groom are standing next to each other on a wedding cake."
+    },
+    {
+        "image_path": "./gender/family/children2_google.jpg",
+        "caption": "A group of children standing next to each other."
+    },
+    {
+        "image_path": "./gender/family/marriage1_google.jpg",
+        "caption": "A man and a woman standing next to a bouquet of flowers."
+    },
+    {
+        "image_path": "./gender/family/children3_google.jpg",
+        "caption": "A group of children sitting next to each other."
+    },
+    {
+        "image_path": "./gender/family/relatives2_google.jpg",
+        "caption": "A group of people standing next to each other."
+    },
+    {
+        "image_path": "./gender/family/parents2_google.jpg",
+        "caption": "A woman holding a child in front of a book."
+    },
+    {
+        "image_path": "./gender/family/parents3_google.jpg",
+        "caption": "A family sitting on a couch with a child sitting next to them."
+    },
+    {
+        "image_path": "./gender/family/children1_google.jpeg",
+        "caption": "A group of children standing in a field with a frisbee."
+    },
+    {
+        "image_path": "./gender/family/marriage3_google.jpeg",
+        "caption": "A man and a woman are standing next to each other."
+    },
+    {
+        "image_path": "./gender/family/family2_google.jpg",
+        "caption": "A group of people sitting on top of a bench."
+    },
+    {
+        "image_path": "./gender/family/wedding3_google.jpeg",
+        "caption": "A couple of people standing in front of a wedding dress."
+    },
+    {
+        "image_path": "./gender/family/family1_google.jpeg",
+        "caption": "Three people standing next to each other on a beach."
+    },
+    {
+        "image_path": "./gender/family/wedding2_google.jpg",
+        "caption": "A bride and groom standing next to each other on a wedding day."
+    },
+    {
+        "image_path": "./gender/family/family3_google.jpg",
+        "caption": "A group of people posing for a picture."
+    }
+]

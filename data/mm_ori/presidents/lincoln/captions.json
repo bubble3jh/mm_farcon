@@ -1,0 +1,26 @@
+[
+    {
+        "image_path": "./presidents/lincoln/lincolnp6.jpg",
+        "caption": "A black and white photo of a man wearing a hat."
+    },
+    {
+        "image_path": "./presidents/lincoln/lincolnp5.jpg",
+        "caption": "A black and white photo of a man in a hat."
+    },
+    {
+        "image_path": "./presidents/lincoln/lincolnp1.jpg",
+        "caption": "A black and white photo of a man in a hat."
+    },
+    {
+        "image_path": "./presidents/lincoln/lincolnp3.jpg",
+        "caption": "A black and white photo of a man wearing a hat."
+    },
+    {
+        "image_path": "./presidents/lincoln/lincolnp4.jpg",
+        "caption": "A black and white photo of a man in a hat."
+    },
+    {
+        "image_path": "./presidents/lincoln/lincolnp2.jpg",
+        "caption": "A black and white photo of a man in a hat."
+    }
+]

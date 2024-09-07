@@ -1,0 +1,26 @@
+[
+    {
+        "image_path": "./weapon/black/bm23.jpg",
+        "caption": "A close up of a man wearing a black and white striped shirt."
+    },
+    {
+        "image_path": "./weapon/black/bf14.jpg",
+        "caption": "A black and white photo of a woman with a hat on."
+    },
+    {
+        "image_path": "./weapon/black/bf23.jpg",
+        "caption": "A black and white photograph of a person wearing a black and white striped shirt."
+    },
+    {
+        "image_path": "./weapon/black/bm14.jpg",
+        "caption": "A black and white photograph of a man."
+    },
+    {
+        "image_path": "./weapon/black/bf56.jpg",
+        "caption": "A close up of a man in a suit and tie."
+    },
+    {
+        "image_path": "./weapon/black/bm56.jpg",
+        "caption": "A close up of a black and white photograph of a person."
+    }
+]

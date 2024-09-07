@@ -1,0 +1,22 @@
+[
+    {
+        "image_path": "./native/us/us1.jpg",
+        "caption": "A couple of black and white airplanes flying in the air."
+    },
+    {
+        "image_path": "./native/us/us3.jpg",
+        "caption": "A group of people standing on top of a mountain."
+    },
+    {
+        "image_path": "./native/us/us5.jpg",
+        "caption": "A red fire hydrant sitting next to a tree."
+    },
+    {
+        "image_path": "./native/us/us4.jpg",
+        "caption": "A picture of a mountain in the middle of the day."
+    },
+    {
+        "image_path": "./native/us/us2.jpg",
+        "caption": "A view of a waterfall with a bridge in the middle of it."
+    }
+]

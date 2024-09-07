@@ -1,0 +1,30 @@
+[
+    {
+        "image_path": "./weapon/weapon/cannon.jpg",
+        "caption": "A black and white photo of a wagon with wheels on it."
+    },
+    {
+        "image_path": "./weapon/weapon/mace.jpg",
+        "caption": "A black and white photo of a black and white umbrella."
+    },
+    {
+        "image_path": "./weapon/weapon/axe.jpg",
+        "caption": "A black and white photo of a black and white hammer."
+    },
+    {
+        "image_path": "./weapon/weapon/revolver.jpg",
+        "caption": "A black and white image of a silver and black camera."
+    },
+    {
+        "image_path": "./weapon/weapon/sword.jpg",
+        "caption": "A pair of scissors hanging from a pole."
+    },
+    {
+        "image_path": "./weapon/weapon/rifle.jpg",
+        "caption": "A black and white photo of a motorcycle."
+    },
+    {
+        "image_path": "./weapon/weapon/grenade.jpg",
+        "caption": "A black and white photo of a metal plate."
+    }
+]

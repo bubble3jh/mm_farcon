@@ -10,8 +10,18 @@ def z_evaluator(args, model, xy_clf, device, eval_model, model_name, trainset=No
     # ----------------------------------------------------- encoding step
     if model_name == 'ours':
         if args.data_name != 'yaleb':
-            representation_tr, _, _, _ = encode_all(args, trainset, model, xy_clf, device, is_train=True)
-            representation_te, _, _, _ = encode_all(args, testset, model, xy_clf, device, is_train=False)
+            if args.data_name != 'clipmm':
+                representation_tr, _, _, _ = encode_all(args, trainset, model, xy_clf, device, is_train=True) # np.array(zx.cpu()), np.array(zs.cpu()), s, y
+                representation_te, _, _, _ = encode_all(args, testset, model, xy_clf, device, is_train=False)
+            else:
+                zx_tr, zs_tr, cont_zs_tr = encode_all_clipmm(args, trainset, model, device, is_train=True) 
+                zx_te, zs_te, cont_zs_te = encode_all_clipmm(args, testset, model, device, is_train=False)
+                representation_tr, representation_te = zx_tr, zx_te
+                neut_x = model.decode(zx_te, (zs_te+cont_zs_te)/2)[0]
+                save_root = '/data1/bubble3jh/farcon/git_FarconVAE/neut_embeddings/imgs/'
+                os.makedirs(save_root+args.attribute_image.split('/')[0], exist_ok=True)
+                torch.save(neut_x, f"{save_root}{args.attribute_image}_{args.clip_model}.pt")
+                print(f'neutralized tensor saved at {save_root}')
         else:
             representation_tr, _, s_tr, y_tr = encode_all_yaleb(args, model, xy_clf, device, is_train=True, data=trainset)
             representation_te, _, s_te, y_te = encode_all_yaleb(args, model, xy_clf, device, is_train=False, data=testset)
@@ -31,7 +41,7 @@ def z_evaluator(args, model, xy_clf, device, eval_model, model_name, trainset=No
             representation_te, s_te, y_te = maxent_encode_yaleb(args, model, device, is_train=False, data=trainset)
 
     # ----------------------------------- 'tabular'
-    if args.data_name != 'yaleb': 
+    if args.data_name != 'yaleb' and args.data_name != 'clipmm': 
         tr_dl, te_dl = get_representation_loader(representation_tr, representation_te, trainset, testset, args.batch_size_te)
         print(f'len train loader :{len(tr_dl)}')  # should be eq with fair epochs
         print(f'len test loader :{len(te_dl)}')
@@ -44,7 +54,7 @@ def z_evaluator(args, model, xy_clf, device, eval_model, model_name, trainset=No
         s_acc = evaluator_predict(s_predictor, te_dl, 's', device)
         return y_pred, y_acc, s_acc, None
     # ----------------------------------- 'yaleb'
-    else:
+    elif args.data_name != 'clipmm':
         clf_y = OneLinearLayer(args.latent_dim, args.y_dim) if eval_model == "lr" else Predictor(args.latent_dim, args.y_dim, args.hidden_units, args)
         clf_s = Predictor(args.latent_dim, args.s_dim, args.hidden_units, args)
 

@@ -1,0 +1,30 @@
+[
+    {
+        "image_path": "./weapon/tool/wallet.jpg",
+        "caption": "A black suitcase sitting on top of a table."
+    },
+    {
+        "image_path": "./weapon/tool/icecream.jpg",
+        "caption": "A black and white photo of a piece of pizza."
+    },
+    {
+        "image_path": "./weapon/tool/phone.jpg",
+        "caption": "A black and white photo of a cell phone."
+    },
+    {
+        "image_path": "./weapon/tool/camera.jpg",
+        "caption": "A black and white photo taken with a camera."
+    },
+    {
+        "image_path": "./weapon/tool/bottle.jpg",
+        "caption": "A water bottle sitting on top of a white table."
+    },
+    {
+        "image_path": "./weapon/tool/walkman.jpg",
+        "caption": "A black and white picture of a radio on a shelf."
+    },
+    {
+        "image_path": "./weapon/tool/coke.jpg",
+        "caption": "A Coca-Cola bottle sitting on top of a table."
+    }
+]

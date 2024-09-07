@@ -1,0 +1,38 @@
+[
+    {
+        "image_path": "./weapon/tool-modern/watch1_google.webp",
+        "caption": "A black and white watch sits on top of a table."
+    },
+    {
+        "image_path": "./weapon/tool-modern/phone1_google.jpg",
+        "caption": "A white iPhone sitting on top of a flower."
+    },
+    {
+        "image_path": "./weapon/tool-modern/icecream1_google.jpg",
+        "caption": "A red and white photo of a strawberry milkshake."
+    },
+    {
+        "image_path": "./weapon/tool-modern/wallet1_google.webp",
+        "caption": "A piece of luggage sitting on top of a shelf."
+    },
+    {
+        "image_path": "./weapon/tool-modern/camera1_google.jpg",
+        "caption": "A person is taking a picture of a camera."
+    },
+    {
+        "image_path": "./weapon/tool-modern/bottle1_google.webp",
+        "caption": "A black coffee bottle sitting on top of a table."
+    },
+    {
+        "image_path": "./weapon/tool-modern/book1_google.jpg",
+        "caption": "A stack of books sitting on top of each other."
+    },
+    {
+        "image_path": "./weapon/tool-modern/phone2_google.jpeg",
+        "caption": "A pair of earphones sitting on top of each other."
+    },
+    {
+        "image_path": "./weapon/tool-modern/coke1_google.jpeg",
+        "caption": "A close up of a Coca-Cola bottle sitting on a table."
+    }
+]

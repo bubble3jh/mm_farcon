@@ -1,0 +1,22 @@
+[
+    {
+        "image_path": "./native/world/world7.jpg",
+        "caption": "A picture of a reef in the middle of the ocean."
+    },
+    {
+        "image_path": "./native/world/world5.jpg",
+        "caption": "A group of snowboarders are standing in the snow."
+    },
+    {
+        "image_path": "./native/world/world2.jpg",
+        "caption": "Two polar bears standing on top of a mountain."
+    },
+    {
+        "image_path": "./native/world/world6.jpg",
+        "caption": "A view of a mountain with mountains in the background."
+    },
+    {
+        "image_path": "./native/world/world3.jpg",
+        "caption": "A view of a mountain range with mountain peaks in the background."
+    }
+]

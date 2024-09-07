@@ -1,0 +1,26 @@
+[
+    {
+        "image_path": "./asian/european-american/AME021.jpg",
+        "caption": "A picture of a man with a hat on his head."
+    },
+    {
+        "image_path": "./asian/european-american/AME011.jpg",
+        "caption": "A photo of a man with a hat on his head."
+    },
+    {
+        "image_path": "./asian/european-american/AFE021.jpg",
+        "caption": "A black and white photo of a person with a hat and sunglasses."
+    },
+    {
+        "image_path": "./asian/european-american/AFE081.jpg",
+        "caption": "A black and white photo of a woman with a hat on her head."
+    },
+    {
+        "image_path": "./asian/european-american/AME041.jpg",
+        "caption": "A picture of a man in a suit and tie."
+    },
+    {
+        "image_path": "./asian/european-american/AFE071.jpg",
+        "caption": "A black and white photo of a woman sitting on a chair."
+    }
+]

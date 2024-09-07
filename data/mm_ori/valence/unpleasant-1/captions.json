@@ -1,0 +1,46 @@
+[
+    {
+        "image_path": "./valence/unpleasant-1/morgue1_google.jpg",
+        "caption": "An empty room with a refrigerator and a window."
+    },
+    {
+        "image_path": "./valence/unpleasant-1/funeral1_google.jpeg",
+        "caption": "A group of people that are holding umbrellas."
+    },
+    {
+        "image_path": "./valence/unpleasant-1/prison1_google.jpg",
+        "caption": "A black and white photo of a jail cell."
+    },
+    {
+        "image_path": "./valence/unpleasant-1/vomit1_google.jpg",
+        "caption": "A close up image of a person sitting on top of a rock."
+    },
+    {
+        "image_path": "./valence/unpleasant-1/coffin1_google.jpg",
+        "caption": "A couple of pieces of luggage in a store."
+    },
+    {
+        "image_path": "./valence/unpleasant-1/jail1_google.png",
+        "caption": "A chain link fence behind a chain link fence."
+    },
+    {
+        "image_path": "./valence/unpleasant-1/devil1_google.jpg",
+        "caption": "A man with red hair standing in front of a fire."
+    },
+    {
+        "image_path": "./valence/unpleasant-1/corpse1_google.jpg",
+        "caption": "A person laying on top of a knife on a table."
+    },
+    {
+        "image_path": "./valence/unpleasant-1/roach1_google.jpg",
+        "caption": "A large brown and black bird sitting on top of a bed."
+    },
+    {
+        "image_path": "./valence/unpleasant-1/crash1_google.jpg",
+        "caption": "A car that is lying on the side of the road."
+    },
+    {
+        "image_path": "./valence/unpleasant-1/slum1_google.jpg",
+        "caption": "A woman standing next to a garbage can on a dirt road."
+    }
+]

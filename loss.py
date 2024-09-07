@@ -200,6 +200,96 @@ class FarconVAELoss(nn.Module):
             else:
                 y_pred = torch.argmax(out1[3], dim=1)
             return recon_x_loss, recon_s_loss, pred_loss, cont_loss, y_pred
+        
+
+class FarconVAELossnoY(nn.Module):
+    def __init__(self, args, device, total_train_it):
+        super(FarconVAELossnoY, self).__init__()
+        # config
+        self.args = args
+        self.device = device
+        self.total_train_it = total_train_it
+        
+        # loss
+        self.kld_loss = kld_loss
+        self.recon_lossf = nn.BCELoss()  # recon(z, dec(enc(z)))
+        self.pred_lossf = nn.BCEWithLogitsLoss() if args.data_name != 'yaleb' else nn.CrossEntropyLoss()  # y prediction loss 
+
+    def forward(self, out1, out2, x_ori, x_cont, s_ori, s_cont, model, current_iter, is_train=True):
+        if is_train:
+            # 1.1. ELBO - Reconstruction Loss
+            recon_x_loss1, recon_x_loss2 = self.recon_lossf(out1[1][0], x_ori), self.recon_lossf(out2[1][0], x_cont)
+            recon_s_loss1, recon_s_loss2 = self.recon_lossf(out1[1][1], s_ori.float()), self.recon_lossf(out2[1][1], s_cont.float())
+            recon_x_loss = 0.5 * (recon_x_loss1 + recon_x_loss2)
+            recon_s_loss = 0.5 * (recon_s_loss1 + recon_s_loss2)
+            recon_loss = recon_x_loss + recon_s_loss
+            
+            # 1.2. ELBO - KL Regularization Loss
+            kl_loss_x1, kl_loss_s1 = self.kld_loss(out1[2][0], out1[2][1]), self.kld_loss(out1[2][2], out1[2][3])
+            kl_loss_x2, kl_loss_s2 = self.kld_loss(out2[2][0], out2[2][1]), self.kld_loss(out2[2][2], out2[2][3])
+            kl_loss_1 = 0.5 * (kl_loss_x1 + kl_loss_s1)
+            kl_loss_2 = 0.5 * (kl_loss_x2 + kl_loss_s2)
+            kl_loss = 0.5 * (kl_loss_1 + kl_loss_2)
+
+            # 1.3. ELBO - Prediction loss
+            
+            # 2. Contrastive Loss
+            d_zx, d_zs, d_xs, cont_loss = 0.0, 0.0, 0.0, 0.0
+            if self.args.alpha != 0:
+                d_zx, d_zs, d_xs = compute_bi_kld(out1[2][0], out1[2][1], out1[2][2], out1[2][3], out2[2][0], out2[2][1], out2[2][2], out2[2][3])
+                if self.args.kernel == 't':
+                    cont_loss = dcd_t(d_zx, d_zs, d_xs, self.args.cont_xs)
+                elif self.args.kernel == 'g':
+                    cont_loss = dcd_g(d_zx, d_zs, d_xs, self.args.cont_xs)
+
+            # 3. Swap Reconstruction Loss
+            sr_loss = 0
+            if self.args.gamma != 0:
+                x_mix_rec1, s_mix_rec1 = model.decode(out2[0][0], out1[0][1])
+                x_mix_rec2, s_mix_rec2 = model.decode(out1[0][0], out2[0][1])
+                ms_ori = self.recon_lossf(torch.cat((x_mix_rec1, s_mix_rec1), dim=1), torch.cat((x_ori, s_ori.float()), dim=1))
+                ms_cont = self.recon_lossf(torch.cat((x_mix_rec2, s_mix_rec2), dim=1), torch.cat((x_cont, s_cont.float()), dim=1))
+                sr_loss = (ms_ori + ms_cont) / 2
+            
+            # Annealing Strategy
+            temperature = 1.0
+            if self.args.fade_in:
+                if current_iter < (self.total_train_it//10):
+                    temperature = 1/(1 + np.exp(-(current_iter - (self.total_train_it//20))))
+            
+            beta_temperature = 1.0
+            if self.args.beta_anneal:
+                if current_iter < (self.total_train_it//10):
+                    beta_temperature = 1/(1 + np.exp(-(current_iter - (self.total_train_it//20))))
+
+            # final loss
+            kl_loss = kl_loss * beta_temperature * self.args.beta
+            cont_loss = cont_loss * temperature * self.args.alpha
+            sr_loss = sr_loss * temperature * self.args.gamma
+            return recon_loss, kl_loss, cont_loss, sr_loss
+        else:
+            # recon loss
+            recon_x_loss = self.recon_lossf(out1[1][0], x_ori)
+            recon_s_loss = self.recon_lossf(out1[1][1], s_ori.float())
+
+            # contrastive loss
+            d_zx, d_zs, d_xs, cont_loss = 0.0, 0.0, 0.0, 0.0
+            if self.args.alpha != 0:
+                d_zx, d_zs, d_xs = compute_bi_kld(out1[2][0], out1[2][1], out1[2][2], out1[2][3], out2[2][0], out2[2][1], out2[2][2], out2[2][3])
+                if self.args.kernel == 't':
+                    cont_loss = dcd_t(d_zx, d_zs, d_xs, self.args.cont_xs)
+                elif self.args.kernel == 'g':
+                    cont_loss = dcd_g(d_zx, d_zs, d_xs, self.args.cont_xs)
+
+            # prediction loss
+            # pred_loss = self.pred_lossf(out1[3], y)
+            
+            # if self.args.data_name != 'yaleb':
+            #     y_pred = torch.ones_like(out1[3], device=self.device)
+            #     y_pred[out1[3] < 0] = 0.0
+            # else:
+            #     y_pred = torch.argmax(out1[3], dim=1)
+            return recon_x_loss, recon_s_loss, cont_loss
 
 
 # --------------------------------

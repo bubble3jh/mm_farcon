@@ -1,0 +1,7 @@
+A_attribute,B_attribute,cap1,cap2,n_X_images,n_Y_images,n_A_text,n_B_text,test_result
+gender/male,gender/female,gender/science,gender/liberal-arts,55,55,55,55,"(0.5148241077222294, 0.0031)"
+intersectional/white-male,intersectional/black-female,gender/science,gender/liberal-arts,55,55,55,55,"(0.502418727285558, 0.0029)"
+arab-muslim/other-people,arab-muslim/arab-muslim,valence/pleasant,valence/unpleasant,55,55,55,55,"(0.6372129689997778, 0.0002)"
+american_race/european-american-google,american_race/african-american-google,valence/pleasant,valence/unpleasant,55,55,55,55,"(0.40754352522685333, 0.0175)"
+american_race/european-american-google,american_race/asian-american-google,valence/pleasant,valence/unpleasant,55,55,55,55,"(0.6858566766014681, 0.0004)"
+sexuality/straight,sexuality/gay,valence/pleasant,valence/unpleasant,55,55,55,55,"(0.5873266093180514, 0.0007)"

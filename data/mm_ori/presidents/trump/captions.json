@@ -1,0 +1,26 @@
+[
+    {
+        "image_path": "./presidents/trump/trump4.jpg",
+        "caption": "a close up of a person sitting in a photo."
+    },
+    {
+        "image_path": "./presidents/trump/trump6.jpg",
+        "caption": "A close up of a man with a mustache."
+    },
+    {
+        "image_path": "./presidents/trump/trump5.jpg",
+        "caption": "a close up of a person with a hat on."
+    },
+    {
+        "image_path": "./presidents/trump/trump1.jpg",
+        "caption": "A close up of a man in a suit and tie."
+    },
+    {
+        "image_path": "./presidents/trump/trump3.jpg",
+        "caption": "A close up of a man in a tie."
+    },
+    {
+        "image_path": "./presidents/trump/trump2.jpg",
+        "caption": "A close up of a close up of a person's face."
+    }
+]

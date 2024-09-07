@@ -8,6 +8,11 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 
+from torch.utils.data import random_split
+import json
+from PIL import Image
+from torchvision import transforms
+import clip
 # -----------------------------------------
 # Dataset
 # -----------------------------------------
@@ -96,7 +101,79 @@ class NoisySet(Dataset):
                 del s_n
                 del y_n
 
+# multi modal dataset
+class MMDataset(Dataset):
+    def __init__(self, args, root_dir, img_attribute1, caption_attribute1, img_attribute2=None, caption_attribute2=None, preprocessed_dir='/data1/bubble3jh/git_FarconVAE/data/mm_experiments_added/.preprocess', clip_model='RN50x4', device="cuda"):        
+        self.root_dir = root_dir
+        self.img_attribute1 = img_attribute1
+        self.img_attribute2 = img_attribute2
+        self.caption_attribute1 = caption_attribute1
+        self.caption_attribute2 = caption_attribute2
+        self.preprocessed_dir = preprocessed_dir
+        self.data = []
+        
+        
+        # Traverse through directories and load meta data
+        img1, cap1, _ = self.get_clip_emb(clip_model, preprocessed_dir, img_attribute1, caption_attribute1)
+        img2, cap2, clip_model = self.get_clip_emb(clip_model, preprocessed_dir, img_attribute2, caption_attribute2)
+        args.clip_model = clip_model
+        for i in range(self.find_min(img1, img2, cap1, cap2)):
+            image1 = img1[i] if img1 is not None else 0
+            image2 = img2[i] if img2 is not None else 0
+            caption1 = cap1[i] if cap1 is not None else 0
+            caption2 = cap2[i] if cap2 is not None else 0
+            
+            self.data.append({
+                "image1": image1,
+                "image2": image2,
+                "caption1": caption1,
+                "caption2": caption2  
+            })
+            
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        return self.data[idx]['image1'], self.data[idx]['image2'], self.data[idx]['caption1'] , self.data[idx]['caption2'] # x, cont x, c, cont c
+    
+    def get_embedding_path(self, preprocessed_dir, attribute, model_name):
+        if attribute is None:
+            return None
+        return os.path.join(preprocessed_dir, f"{attribute}/{model_name}.pt")
 
+    def load_tensor_from_file(self, file_path):
+        if file_path is None:
+            return None
+        tensor_data = torch.load(file_path)
+        return torch.tensor(tensor_data).to(torch.float32).squeeze()
+
+    def get_clip_emb(self, clip_model, preprocessed_dir, img_attribute, caption_attribute):
+        model_names = {
+            "ViT-L14": {"img": "ViT-L14_img", "caption": "ViT-L14_caption"},
+            "RN50x4": {"img": "RN50x4_img", "caption": "RN50x4_caption"},
+            "ViT-B32": {"img": "ViT-B32_img", "caption": "ViT-B32_caption"},
+        }
+        
+        if clip_model not in model_names:
+            raise ValueError(f"Unsupported clip_model: {clip_model}")
+        
+        image_path = self.get_embedding_path(preprocessed_dir, img_attribute, model_names[clip_model]["img"])
+        caption_path = self.get_embedding_path(preprocessed_dir, caption_attribute, model_names[clip_model]["caption"])
+        
+        image_embeddings = self.load_tensor_from_file(image_path)
+        caption_embeddings = self.load_tensor_from_file(caption_path)
+        
+        return image_embeddings, caption_embeddings, clip_model
+    
+    def find_min(self, img1, img2, cap1, cap2):
+        lengths = []
+        
+        for lst in [img1, img2, cap1, cap2]:
+            if lst is not None:
+                lengths.append(len(lst))
+                
+        return min(lengths) if lengths else None
+    
 class RepresentationSet(Dataset):
     '''for 2 stage evaluation'''
     def __init__(self, z, file_name, target, sensitive):
@@ -151,6 +228,14 @@ def get_xsy_loaders(train_file_name, test_file_name, data_name, sensitive, test_
     testloader = DataLoader(testset, batch_size=test_batch_size, shuffle=False, drop_last=False, num_workers=0)
     return trainloader, testloader
 
+def get_mm_loaders(root_dir, attributes_list, test_batch_size, args):
+    # trainset, testset = NoisySet(train_file_name, data_name, sensitive, args), NoisySet(test_file_name, data_name, sensitive, args)
+    dataset = MMDataset(root_dir=root_dir, img_attribute1=args.attribute_image,caption_attribute1=args.target_caption1,img_attribute2=None,caption_attribute2=args.target_caption2, clip_model=args.clip_model, args=args)
+    train_len = int(0.7 * len(dataset))
+    trainset, testset = random_split(dataset, [train_len, len(dataset)-train_len])
+    trainloader = DataLoader(trainset, batch_size=test_batch_size, shuffle=True, drop_last=False, num_workers=0) #TODO: trainbatchsize <- testbatchsize
+    testloader = DataLoader(testset, batch_size=test_batch_size, shuffle=False, drop_last=False, num_workers=0)    
+    return trainloader, testloader
 # -----------------------------------------
 # YaleB Dataset
 # -----------------------------------------

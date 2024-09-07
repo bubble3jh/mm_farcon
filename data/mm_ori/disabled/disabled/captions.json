@@ -1,0 +1,18 @@
+[
+    {
+        "image_path": "./disabled/disabled/disabled3.jpg",
+        "caption": "A black and white photo of a dog and a man."
+    },
+    {
+        "image_path": "./disabled/disabled/disabled1.jpg",
+        "caption": "A black and white photo of a person holding an umbrella."
+    },
+    {
+        "image_path": "./disabled/disabled/disabled4.jpg",
+        "caption": "A black and white photo of a person walking on a sidewalk."
+    },
+    {
+        "image_path": "./disabled/disabled/disabled2.jpg",
+        "caption": "A picture of a bicycle with a sign on it."
+    }
+]

@@ -1,0 +1,26 @@
+[
+    {
+        "image_path": "./presidents/kennedy/kennedy3.jpg",
+        "caption": "A black and white photo of a man in a suit and tie."
+    },
+    {
+        "image_path": "./presidents/kennedy/kennedy6.jpg",
+        "caption": "A black and white photo of a man in a suit and tie."
+    },
+    {
+        "image_path": "./presidents/kennedy/kennedy1.jpg",
+        "caption": "A black and white photo of a man in a suit and tie."
+    },
+    {
+        "image_path": "./presidents/kennedy/kennedy2.jpg",
+        "caption": "A man wearing a suit and tie standing in front of a building."
+    },
+    {
+        "image_path": "./presidents/kennedy/kennedy5.jpg",
+        "caption": "A picture of a man wearing a suit and tie."
+    },
+    {
+        "image_path": "./presidents/kennedy/kennedy4.jpg",
+        "caption": "A black and white photo of a man in a suit and tie."
+    }
+]

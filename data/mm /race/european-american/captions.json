@@ -1,0 +1,26 @@
+[
+    {
+        "image_path": "./race/european-american/wm2_nc.jpg",
+        "caption": "A close up of a close up picture of a person."
+    },
+    {
+        "image_path": "./race/european-american/wm1_nc.jpg",
+        "caption": "A close up of a man in a white shirt and tie."
+    },
+    {
+        "image_path": "./race/european-american/wf2_nc.jpg",
+        "caption": "A black and white photograph of a woman."
+    },
+    {
+        "image_path": "./race/european-american/wf1_nc.jpg",
+        "caption": "A close-up of a girl in a dark sweater."
+    },
+    {
+        "image_path": "./race/european-american/wm3_nc.jpg",
+        "caption": "A close up of a man in a striped shirt and tie."
+    },
+    {
+        "image_path": "./race/european-american/wf3_nc.jpg",
+        "caption": "A black and white photograph of a woman."
+    }
+]

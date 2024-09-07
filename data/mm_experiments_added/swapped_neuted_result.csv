@@ -1,0 +1,7 @@
+Name,X,Y,A,B,n_t,n_a,p_i,d_i
+gender/male vs. gender/female,science,liberal-arts,male,female,55,15,0.1406,0.20625467783511597
+intersectional/white-male vs. intersectional/black-female,science,liberal-arts,white-male,black-female,55,15,0.1472,0.20625594315715912
+arab-muslim/other-people vs. arab-muslim/arab-muslim,pleasant,unpleasant,other-people,arab-muslim,55,10,0.0001,1.4397983826001048
+american_race/european-american-google vs. american_race/african-american-google,pleasant,unpleasant,european-american-google,african-american-google,55,39,0.409,0.0472483540330835
+american_race/european-american-google vs. american_race/asian-american-google,pleasant,unpleasant,european-american-google,asian-american-google,55,39,0.0006,0.6271267985374062
+sexuality/straight vs. sexuality/gay,pleasant,unpleasant,straight,gay,55,8,0.0092,0.44293738986354764

@@ -1,0 +1,86 @@
+[
+    {
+        "image_path": "./gender/science/biology1_google.jpg",
+        "caption": "A kitchen with a lot of equipment in it."
+    },
+    {
+        "image_path": "./gender/science/biology2_google.jpg",
+        "caption": "A large room filled with desks and chairs."
+    },
+    {
+        "image_path": "./gender/science/math3_google.jpg",
+        "caption": "A row of chairs sitting on top of a wall."
+    },
+    {
+        "image_path": "./gender/science/astronomy1_google.jpg",
+        "caption": "A bunch of chairs that are sitting on top of each other."
+    },
+    {
+        "image_path": "./gender/science/biology3_google.jpg",
+        "caption": "A device that is sitting on top of a table."
+    },
+    {
+        "image_path": "./gender/science/physics2_google.jpg",
+        "caption": "A group of chairs that are sitting on top of each other."
+    },
+    {
+        "image_path": "./gender/science/chemistry1_google.jpg",
+        "caption": "a kitchen with a lot of tools on the counter."
+    },
+    {
+        "image_path": "./gender/science/chemistry3_google.jpg",
+        "caption": "A close up of a person holding a glass of water."
+    },
+    {
+        "image_path": "./gender/science/astronomy3_google.jpg",
+        "caption": "A lot of chairs and equipment sitting on top of each other."
+    },
+    {
+        "image_path": "./gender/science/physics1_google.png",
+        "caption": "A room filled with various items on the floor."
+    },
+    {
+        "image_path": "./gender/science/engineering2_google.jpg",
+        "caption": "A group of machines sitting on top of a table."
+    },
+    {
+        "image_path": "./gender/science/engineering3_google.jpg",
+        "caption": "A large building with lots of machines in it."
+    },
+    {
+        "image_path": "./gender/science/physics3_google.jpg",
+        "caption": "A room with a lot of desks and chairs."
+    },
+    {
+        "image_path": "./gender/science/geology1_google.jpg",
+        "caption": "A picture of a stone quarry in the middle of a desert."
+    },
+    {
+        "image_path": "./gender/science/math1_google.jpg",
+        "caption": "A person sitting on top of a chalkboard."
+    },
+    {
+        "image_path": "./gender/science/geology2_google.jpg",
+        "caption": "A couple of people standing on top of a dirt pit."
+    },
+    {
+        "image_path": "./gender/science/math2_google.jpeg",
+        "caption": "A classroom filled with desks and chairs."
+    },
+    {
+        "image_path": "./gender/science/engineering1_google.jpeg",
+        "caption": "A group of people are working on a piece of paper."
+    },
+    {
+        "image_path": "./gender/science/astronomy2_google.jpg",
+        "caption": "A classroom with a lot of desks and a lot of laptops."
+    },
+    {
+        "image_path": "./gender/science/chemistry2_google.jpg",
+        "caption": "A table with a glass of water in front of it."
+    },
+    {
+        "image_path": "./gender/science/geology3_google.jpg",
+        "caption": "A laptop computer sitting on top of a desk."
+    }
+]

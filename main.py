@@ -32,12 +32,16 @@ def main(args, device):
         data.load()
         train_loader = torch.utils.data.DataLoader(data.pretrainset, batch_size=args.batch_size, shuffle=True, num_workers=0)
         test_loader = torch.utils.data.DataLoader(data.testset, batch_size=args.batch_size_te, shuffle=False, num_workers=0)
+    elif args.data_name == "clipmm":
+        train_loader, test_loader = get_mm_loaders(root_dir='/data1/bubble3jh/git_FarconVAE/data/mm_experiments_added', 
+                                                   attributes_list=['gender/male'], test_batch_size=args.batch_size_te, args=args)
     else:
         train_loader, test_loader = get_xsy_loaders(os.path.join(args.data_path, args.train_file_name),
                                                     os.path.join(args.data_path, args.test_file_name),
                                                     args.data_name, args.sensitive, args.batch_size_te, args)
 
-    model = FarconVAE(args, device)
+    if args.data_name != "clipmm": model = FarconVAE(args, device)
+    else:                          model = FarconVAEnoY(args, device)
     model.to(device)
     
     # train model
@@ -67,7 +71,7 @@ def evaluation(args, device, eval_model, model=None, clf_xy=None, is_e2e=True, t
     # Validate
     if is_e2e:
         print('do End-to-End Experiment phase')
-        y_pred, y_acc, s_acc, s_pred = z_evaluator(args, model, clf_xy, device, eval_model, 'ours', trainset, testset)
+        z_evaluator(args, model, clf_xy, device, eval_model, 'ours', trainset, testset)
     else:
         model = FarconVAE(args, device)
         clf_xy = BestClf(args.n_features, 1, args.hidden_units, args)
@@ -79,26 +83,26 @@ def evaluation(args, device, eval_model, model=None, clf_xy=None, is_e2e=True, t
         y_pred, y_acc, s_acc, s_pred = z_evaluator(args, model, clf_xy, device, eval_model, 'ours', trainset, testset)
 
     # Final reporting
-    if args.data_name != 'yaleb':
-        dp, _, _, eodd, gap = metric_scores(os.path.join(args.data_path, args.test_file_name), y_pred)
-        print('----------------------------------------------------------------')
-        print(f'DP: {dp:.4f} | EO: {eodd:.4f} | GAP: {gap:.4f} | yAcc: {y_acc:.4f} | sAcc: {s_acc:.4f}')
-        print('----------------------------------------------------------------')
-        #performance_log = {f'DP': dp, f'EO':eodd, f'GAP': gap, f'y_acc': y_acc, f's_acc': s_acc}
-        #wandb.log(performance_log)
-    else:
-        keys = np.unique(np.array(s_pred), return_counts=True)[0]
-        values = np.unique(np.array(s_pred), return_counts=True)[1]/s_pred.shape[0]
-        s_pred_log = {'pred_'+str(i):0 for i in range(5)}
-        for i in range(len(keys)):
-            s_pred_log['pred_'+str(keys[i])] = values[i]
-        print('----------------------------------------------------------------')
-        print(f'yAcc: {y_acc:.4f} | sAcc: {s_acc:.4f}')
-        print('----------------------------------------------------------------')
+    # if args.data_name != 'yaleb':
+    #     dp, _, _, eodd, gap = metric_scores(os.path.join(args.data_path, args.test_file_name), y_pred)
+    #     print('----------------------------------------------------------------')
+    #     print(f'DP: {dp:.4f} | EO: {eodd:.4f} | GAP: {gap:.4f} | yAcc: {y_acc:.4f} | sAcc: {s_acc:.4f}')
+    #     print('----------------------------------------------------------------')
+    #     #performance_log = {f'DP': dp, f'EO':eodd, f'GAP': gap, f'y_acc': y_acc, f's_acc': s_acc}
+    #     #wandb.log(performance_log)
+    # # else:
+        # keys = np.unique(np.array(s_pred), return_counts=True)[0]
+        # values = np.unique(np.array(s_pred), return_counts=True)[1]/s_pred.shape[0]
+        # s_pred_log = {'pred_'+str(i):0 for i in range(5)}
+        # for i in range(len(keys)):
+        #     s_pred_log['pred_'+str(keys[i])] = values[i]
+        # print('----------------------------------------------------------------')
+        # print(f'yAcc: {y_acc:.4f} | sAcc: {s_acc:.4f}')
+        # print('----------------------------------------------------------------')
         # performance_log = {f'y_acc': y_acc, f's_acc': s_acc}
         # wandb.log(s_pred_log)
         # wandb.log(performance_log)
-    return y_acc, s_acc
+    # return y_acc, s_acc
 
 # -----------------------
 # end-to-end [train & evaluation]
@@ -120,19 +124,20 @@ def e2e(args, device):
         eval_model = args.eval_model if args.eval_model != 'disc' else args.disc
         if args.data_name == 'yaleb':
             y_acc, s_acc = evaluation(args, device, eval_model, model, clf_xy, is_e2e=True, trainset=data, testset=data)
-        else:
+        elif args.data_name != 'clipmm':
             y_acc, s_acc = evaluation(args, device, eval_model, model, clf_xy, is_e2e=True, trainset=tr_set, testset=te_set)
-        
-        y_accs.append(y_acc); s_accs.append(s_acc)
-    if args.n_seed != 1:
-        y_mean, y_std = np.mean(y_accs), np.std(y_accs)
-        s_mean, s_std = np.mean(s_accs), np.std(s_accs)
-        print('\n-----------------------------------------------------------')
-        print(f"{args.n_seed} runs y acc mean: {y_mean}, std: {y_std},\n       s acc means: {s_mean}, std: {s_std}")
-        print('---------------------------------------------------------')
-    print('\n-----------------------------------------------------------')
-    print(f"Time for Train & Eval per 1 program:", time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time)))
-    print('---------------------------------------------------------')
+        else:
+            evaluation(args, device, eval_model, model, clf_xy, is_e2e=True, trainset=tr_set, testset=te_set)
+    #     y_accs.append(y_acc); s_accs.append(s_acc)
+    # if args.n_seed != 1:
+    #     y_mean, y_std = np.mean(y_accs), np.std(y_accs)
+    #     s_mean, s_std = np.mean(s_accs), np.std(s_accs)
+    #     print('\n-----------------------------------------------------------')
+    #     print(f"{args.n_seed} runs y acc mean: {y_mean}, std: {y_std},\n       s acc means: {s_mean}, std: {s_std}")
+    #     print('---------------------------------------------------------')
+    # print('\n-----------------------------------------------------------')
+    # print(f"Time for Train & Eval per 1 program:", time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time)))
+    # print('---------------------------------------------------------')
 
 
 if __name__ == "__main__":
@@ -174,6 +179,11 @@ if __name__ == "__main__":
     parser.add_argument("--beta", type=float, default=0.2, help="KLD prior regularization weight")
     parser.add_argument("--gamma", type=float, default=1.0, help="swap recon loss weight")
 
+    #-------------------- multi modal
+    parser.add_argument("--attribute_image", type=str, default='gender/male')
+    parser.add_argument("--target_caption1", type=str, default='gender/science')
+    parser.add_argument("--target_caption2", type=str, default='gender/liberal-arts')
+    parser.add_argument("--clip_model", type=str, default='ViT-L14', choices=['ViT-L14', 'RN50x4', 'ViT-B32'])
     args = parser.parse_args()
     device = torch.device(f'cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -271,7 +281,38 @@ if __name__ == "__main__":
         args.model_path = './model_german'
         args.data_path = './data/german/'
         args.result_path = './result_german'
-        args.clf_path = './bestclf/bestclf_german.pth'
+        args.clf_path = './bestclf/bestclf_german.pth'    
+    elif args.data_name == 'clipmm':
+        args.y_dim = 0
+        if args.clip_model == "RN50x4":
+            args.s_dim = 640; args.n_features = 640
+        elif args.clip_model == "ViT-L14":
+            args.s_dim = 768; args.n_features = 768
+        elif args.clip_model == "ViT-B32":
+            args.s_dim = 512; args.n_features = 512
+        args.latent_dim = 512
+        args.hidden_units = 128
+        args.sensitive = 'gender_ Male'
+        args.target = 'risk_Bad'
+        args.encoder = 'mlp'
+        args.batch_size = 800
+        args.batch_size_te = 200
+        args.epochs = 2000
+        args.fade_in = 0
+        args.beta_anneal = 1
+        args.clf_act = 'leaky'
+        args.clf_seq = 'fbad'
+        args.clf_hidden_units = 64
+        args.connection = 0
+        args.enc_act = 'prelu'
+        args.dec_act = 'prelu'
+        args.enc_seq = 'fa'
+        args.dec_seq = 'fa'
+        args.pred_act = 'leaky'
+        args.pred_seq = 'fba'
+        args.model_path = './model_clipmm'
+        args.result_path = './result_clipmm'
+        args.clf_path = 'no'
     args.patience = int(args.epochs * 0.10)
     # -------------------------------------------------------------------
     # import wandb
